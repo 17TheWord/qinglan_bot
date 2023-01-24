@@ -12,6 +12,8 @@
 
 ## 安装
 
+- 文档：[仍在更新的青岚Bot文档](https://17theword.github.io/qinglan_bot/)
+
 - NoneBot2
     - `pip install qinglan-bot`
 
