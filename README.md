@@ -1,14 +1,12 @@
 # 青岚Bot
 
-> 提示： 该版本没有经过充分测试, 不建议在生产环境使用, 如果发现任何问题请自行解决，  
-> 或  
-> 提交 [Issues](https://github.com/17TheWord/qinglan_bot/issues) （因个人能力有限不保证百分百解决）。
-
-在原有功能上加入了动态数据
+基于NoneBot的与Minecraft Server互通消息的机器人
 
 ## 介绍
 
 命名的灵感来自于我的一位朋友
+
+在原插件上加入了动态配置的功能
 
 数据库参考 [`HarukaBot`](https://github.com/SK-415/HarukaBot)
 
