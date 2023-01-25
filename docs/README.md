@@ -1,6 +1,6 @@
 ---
 home: true
-heroText: 青岚 Bot
+heroText: 青岚
 [//]: # (heroImage: /logo.png)
 tagline: 互通MineCraft服务器与QQ群聊的小助手
 actionText: 开始使用
