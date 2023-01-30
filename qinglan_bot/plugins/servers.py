@@ -16,8 +16,8 @@ async def _(event: MessageEvent):
     server_list = Server.all()
     async for server in server_list:
         message += (
-            f"{server.server_name} "
+            f"{server.server_name}："
             f"Rcon_Msg：{'开' if server.rcon_msg else '关'}，"
-            f"Rcon_CMD：{'开' if server.rcon_cmd else '关'}，"
+            f"Rcon_CMD：{'开' if server.rcon_cmd else '关'}，\n"
         )
     await servers.finish(message=message)

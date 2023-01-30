@@ -17,11 +17,11 @@ mc_qq_command.handle()(permission_check)
 
 # 收到 群/频 道消息时
 @mc_qq.handle()
-async def handle_first_receive(bot: Bot, event: Union[GroupMessageEvent, GuildMessageEvent]):
+async def msg_first_receive(bot: Bot, event: Union[GroupMessageEvent, GuildMessageEvent]):
     await send_msg_to_mc(bot=bot, event=event)
 
 
 # 收到 群/频道 命令时
 @mc_qq_command.handle()
-async def handle_first_receive(bot: Bot, event: Union[GroupMessageEvent, GuildMessageEvent]):
+async def cmd_first_receive(bot: Bot, event: Union[GroupMessageEvent, GuildMessageEvent]):
     await send_command_to_mc(bot=bot, event=event)

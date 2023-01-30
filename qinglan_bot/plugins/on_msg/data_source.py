@@ -16,7 +16,7 @@ CLIENTS = []
 async def ws_client(websocket):
     """WebSocket"""
     try:
-        server_name = websocket.request_headers["x-self-name"]
+        server_name = websocket.request_headers["x-self-name"].encode('utf-8').decode('unicode_escape')
     except KeyError:
         server_name = ""
     # 服务器名为空
@@ -65,52 +65,57 @@ async def ws_client(websocket):
 async def send_msg_to_mc(bot: Bot, event: Union[GroupMessageEvent, GuildMessageEvent]):
     """发送消息到 MC"""
     # 处理来自QQ的消息
-    client, server = await get_client(event=event)
-    # 如果 服务器的rcon已连接 且 服务器切换为rcon发送消息
-    if client["rcon_connection"]["is_open"] and server["rcon_msg"] and client["rcon_connection"]["rcon"]:
-        text_msg, msgJson = await process_msg_for_rcon(bot=bot, event=event)
-        try:
-            await client["rcon_connection"]["rcon"].send_cmd(msgJson)
-            logger.success(f"[MC_QQ_Rcon]丨发送至 [server:{client['server_name']}] 的消息 \"{text_msg}\"")
-        except aiomcrcon.ClientNotConnectedError:
-            logger.error(f"[MC_QQ]丨[Server:{client['server_name']}] 的Rcon未连接，发送消息失败")
+    if client_list := await get_clients(event=event):
+        for client in client_list:
+            # 如果 服务器的rcon已连接 且 服务器切换为rcon发送消息
+            if client["client"]["rcon_connection"]["is_open"] and client["server"]["rcon_msg"] and \
+                    client["client"]["rcon_connection"]["rcon"]:
+                text_msg, msgJson = await process_msg_for_rcon(bot=bot, event=event)
+                try:
+                    await client["client"]["rcon_connection"]["rcon"].send_cmd(msgJson)
+                    logger.success(f"[MC_QQ_Rcon]丨发送至 [server:{client['client']['server_name']}] 的消息 \"{text_msg}\"")
+                except aiomcrcon.ClientNotConnectedError:
+                    logger.error(f"[MC_QQ]丨[Server:{client['client']['server_name']}] 的Rcon未连接，发送消息失败")
 
-    elif client['ws_client']:
-        text_msg, msgJson = await process_msg_for_ws(bot=bot, event=event)
-        try:
-            await client['ws_client'].send(msgJson)
-            logger.success(f"[MC_QQ]丨发送至 [server:{client['server_name']}] 的消息 \"{text_msg}\"")
-        except websockets.WebSocketException:
-            logger.error(f"[MC_QQ]丨发送至 [Server:{client['server_name']}] 的过程中出现了错误")
-            CLIENTS.remove(client)
+            elif client["client"]['ws_client']:
+                text_msg, msgJson = await process_msg_for_ws(bot=bot, event=event)
+                try:
+                    await client["client"]['ws_client'].send(msgJson)
+                    logger.success(f"[MC_QQ]丨发送至 [server:{client['client']['server_name']}] 的消息 \"{text_msg}\"")
+                except websockets.WebSocketException:
+                    logger.error(f"[MC_QQ]丨发送至 [Server:{client['client']['server_name']}] 的过程中出现了错误")
+                    CLIENTS.remove(client)
 
 
 async def send_command_to_mc(bot: Bot, event: Union[GroupMessageEvent, GuildMessageEvent]):
     """发送命令到 Minecraft"""
-    client, server = await get_client(event=event)
-    if client["rcon_connection"]["is_open"] and server["rcon_cmd"] and client["rcon_connection"]["rcon"]:
-        try:
-            await bot.send(event, message=str(
-                (await client["rcon_connection"]["rcon"].send_cmd(event.raw_message.strip("/mcc")))[0]))
-            logger.success(
-                f"[MC_QQ_Rcon]丨发送至 [server:{client['server_name']}] 的命令 \"{event.raw_message.strip('/mcc')}\""
-            )
-        except aiomcrcon.ClientNotConnectedError:
-            logger.error(f"[MC_QQ_Rcon]丨发送至 [Server:{client['server_name']}] 的过程中出现了错误")
-            # 连接关闭则移除客户端
-            CLIENTS.remove(client)
+    if client_list := await get_clients(event=event):
+        for client in client_list:
+            if client["client"]["rcon_connection"]["is_open"] and client["server"]["rcon_cmd"] and client["client"]["rcon_connection"]["rcon"]:
+                try:
+                    await bot.send(event, message=str(
+                        (await client["client"]["rcon_connection"]["rcon"].send_cmd(event.raw_message.strip("/mcc").strip()))[
+                            0]))
+                    logger.success(
+                        f"[MC_QQ_Rcon]丨发送至 [server:{client['client']['server_name']}] 的命令 \"{event.raw_message.strip('/mcc').strip()}\""
+                    )
+                except aiomcrcon.ClientNotConnectedError:
+                    logger.error(f"[MC_QQ_Rcon]丨发送至 [Server:{client['client']['server_name']}] 的过程中出现了错误")
+                    # 连接关闭则移除客户端
+                    CLIENTS.remove(client)
 
 
-async def get_client(event: Union[GroupMessageEvent, GuildMessageEvent]):
+async def get_clients(event: Union[GroupMessageEvent, GuildMessageEvent]):
     """获取 服务器名、ws客户端、rcon连接"""
+    res = []
     for per_client in CLIENTS:
         for per_server in server_list:
             # 如果 服务器名 == ws客户端中记录的服务器名，且ws客户端存在
             if per_client['ws_client'] and per_server['server_name'] == per_client['server_name']:
                 for per_group in per_server['all_group_list']:
                     if await get_type_id(event) == per_group["type_id"]:
-                        return per_client, per_server
-    return None
+                        res.append({"client": per_client, "server": per_server})
+    return res
 
 
 async def connect_rcon():
