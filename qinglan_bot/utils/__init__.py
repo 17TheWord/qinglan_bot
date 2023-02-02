@@ -186,15 +186,14 @@ async def process_msg_for_ws(bot: Bot, event: Union[GroupMessageEvent, GuildMess
     messageList = []
 
     # 发送群聊名称
-    group_name = {}
     from ..database import DB as db
     if isinstance(event, GroupMessageEvent) and (await db.get_group(group_id=event.group_id)).send_group_name:
-        group_name['msgType'] = "group_name"
-        group_name['msgData'] = (await bot.get_group_info(group_id=event.group_id))['group_name']
+        group_name = {'msgType': "group_name",
+                      'msgData': (await bot.get_group_info(group_id=event.group_id))['group_name']}
         messageList.append(group_name)
     elif isinstance(event, GuildMessageEvent) and (
             await db.get_guild(guild_id=event.guild_id, channel_id=event.channel_id)).send_group_name:
-        group_name['msgType'] = "group_name"
+        group_name = {'msgType': "group_name"}
         guild_name = (await bot.get_guild_meta_by_guest(guild_id=event.guild_id))['guild_name']
         for per_channel in (await bot.get_guild_channel_list(guild_id=event.guild_id, no_cache=True)):
             if str(event.channel_id) == per_channel['channel_id']:
