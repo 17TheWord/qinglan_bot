@@ -8,7 +8,7 @@ help = on_command("ql帮助", rule=to_me(), priority=3)
 
 @help.handle()
 async def _():
-    message = "MC_QQ 目前支持的功能：\n（请将Server替换为需要操作的服务器名）\n"
+    message = "青岚 目前支持的功能：\n（请将Server替换为需要操作的服务器名）\n"
     for matchers_list in matchers.values():
         for matcher in matchers_list:
             if (
@@ -17,5 +17,5 @@ async def _():
                     and matcher.__doc__
             ):
                 message += matcher.__doc__ + "\n"
-    message += "详细帮助：https://17theword.github.io/mc_qq/"
+    message += "详细帮助：https://17theword.github.io/qinglan_bot"
     await help.finish(message)
