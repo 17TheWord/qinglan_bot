@@ -28,8 +28,17 @@ class DB:
         from . import models  # noqa: F401
 
         await Tortoise.init(
-            db_url=f"sqlite://{get_path('mcqq.sqlite3')}",
-            modules={"models": [locals()["models"]]},
+            config={
+                "connections": {
+                    "qinglan_bot": f"sqlite://{get_path('mcqq.sqlite3')}"
+                },
+                "apps": {
+                    "qinglan_app": {
+                        "models": [models],  # 数据库
+                        "default_connection": "qinglan_bot"
+                    }
+                }
+            }
         )
         await Tortoise.generate_schemas()
         await cls.update_server_list()
