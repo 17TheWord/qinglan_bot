@@ -1,0 +1,1 @@
+const t=JSON.parse('{"key":"v-4226f46b","path":"/install/go-cqhttp.html","title":"安装 go-cqhttp","lang":"zh-CN","frontmatter":{},"headers":[],"git":{"updatedTime":1675951172000,"contributors":[{"name":"17TheWord","email":"17theword@gmail.com","commits":1}]},"filePathRelative":"install/go-cqhttp.md"}');export{t as data};
