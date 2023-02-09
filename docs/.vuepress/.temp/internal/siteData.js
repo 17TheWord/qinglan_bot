@@ -1,1 +1,0 @@
-export const siteData = JSON.parse("{\"base\":\"/qinglan_bot/\",\"lang\":\"en-US\",\"title\":\"青岚\",\"description\":\"青岚Bot\",\"head\":[[\"link\",{\"rel\":\"icon\",\"href\":\"/favicon.jpg\"}]],\"locales\":{\"/\":{\"lang\":\"zh-CN\"}}}")
