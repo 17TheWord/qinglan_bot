@@ -2,6 +2,8 @@ name: Pages
 on:
   push:
     branches: [ "main" ]
+  merge_group:
+    branches: [ "main" ]
   workflow_dispatch:
 jobs:
   build:
