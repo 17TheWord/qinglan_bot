@@ -1,0 +1,1 @@
+const t=JSON.parse('{"key":"v-63c69a05","path":"/install/qinglanbot/pip.html","title":"脚手架安装（推荐）","lang":"zh-CN","frontmatter":{},"headers":[],"git":{},"filePathRelative":"install/qinglanbot/pip.md"}');export{t as data};
