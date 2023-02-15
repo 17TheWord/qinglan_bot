@@ -25,11 +25,14 @@ class DB:
     @classmethod
     async def init(cls):
         """初始化数据库"""
-        from . import models  # noqa: F401
-
+        from . import models
         await Tortoise.init(
             config={
                 "connections": {
+                    # "qinglan_bot": {
+                    #     "engine": "tortoise.backends.sqlite",
+                    #     "credentials": {"file_path": get_path("mcqq.sqlite3")},
+                    # },
                     "qinglan_bot": f"sqlite://{get_path('mcqq.sqlite3')}"
                 },
                 "apps": {
@@ -143,14 +146,15 @@ class DB:
             return False
         if kwargs["type"] == "group":
             await cls.add_group(group_id=kwargs["type_id"], send_group_name=False)
-        await cls.add_server(
-            server_name=server_name,
-            rcon_ip="127.0.0.1",
-            rcon_port=25575,
-            rcon_password="change_password",
-            rcon_msg=False,
-            rcon_cmd=False
-        )
+        if not await Server.get(server_name=server_name):
+            await cls.add_server(
+                server_name=server_name,
+                rcon_ip="127.0.0.1",
+                rcon_port=25575,
+                rcon_password="change_password",
+                rcon_msg=False,
+                rcon_cmd=False
+            )
         await cls.update_server_list()
         return True
 

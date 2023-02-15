@@ -5,7 +5,7 @@ from .on_msg.data_source import CLIENTS
 from ..utils import permission_check, to_me
 
 connected_servers = on_command("已连接服务器列表", rule=to_me(), priority=3)
-connected_servers.__doc__ = """已连接服务器列表（管理一）"""
+connected_servers.__doc__ = """已连接服务器列表（管理员）"""
 
 connected_servers.handle()(permission_check)
 
