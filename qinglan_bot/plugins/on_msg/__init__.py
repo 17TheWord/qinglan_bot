@@ -6,11 +6,12 @@ from .data_source import send_msg_to_mc, send_command_to_mc
 from ...utils import msg_rule, permission_check
 from typing import Union
 
-mc_qq = on_message(priority=5, rule=msg_rule, block=False)
+mc_qq = on_message(priority=5, rule=msg_rule)
 mc_qq_command = on_command(
     "mcc",
     priority=3,
-    rule=msg_rule
+    rule=msg_rule,
+    block=True
 )
 mc_qq_command.handle()(permission_check)
 
