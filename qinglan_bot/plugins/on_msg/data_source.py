@@ -93,10 +93,13 @@ async def send_command_to_mc(bot: Bot, event: Union[GroupMessageEvent, GuildMess
         for client in client_list:
             if client["client"]["rcon_connection"]["is_open"] and client["server"]["rcon_cmd"] and \
                     client["client"]["rcon_connection"]["rcon"]:
+                # 获取命令
+                ori_cmd = event.raw_message.strip("/").strip("mcc").strip()
                 try:
-                    await bot.send(event, message=str(
-                        (await client["client"]["rcon_connection"]["rcon"].send_cmd(
-                            event.raw_message.strip("/").strip("/mcc").strip()))[0]))
+                    # 发送命令并获得返回消息
+                    back_msg = (await client["client"]["rcon_connection"]["rcon"].send_cmd(ori_cmd))[0]
+                    # 机器人发送信息
+                    await bot.send(event, message=back_msg)
                     logger.success(
                         f"[MC_QQ_Rcon]丨发送至 [server:{client['client']['server_name']}] 的命令 \"{event.raw_message.strip('/mcc').strip()}\""
                     )
