@@ -1,23 +1,22 @@
 import json
 from typing import Union
 
-from nonebot import logger
+from mcqq_tool.utils import get_member_nickname
+from nonebot.adapters.onebot.v11 import Message, GroupMessageEvent, Bot, GROUP_ADMIN, GROUP_OWNER, PrivateMessageEvent
 from nonebot.exception import FinishedException
 from nonebot.internal.permission import Permission
 from nonebot.internal.rule import Rule
 from nonebot.matcher import Matcher
 from nonebot.params import ArgPlainText, CommandArg
-from nonebot.adapters.onebot.v11 import Message, GroupMessageEvent, Bot, GROUP_ADMIN, GROUP_OWNER, PrivateMessageEvent
 from nonebot.permission import SUPERUSER
 from nonebot_plugin_guild_patch import ChannelDestroyedNoticeEvent, GuildMessageEvent
 
-from .config import get_mc_qq_mcrcon_guild_admin_roles, get_mc_qq_to_me
-from ..database import DB as db
-from ..database.db import server_list
+from . import plugin_config
+from .database.db import rule_group_list, rule_guild_list
 
 
 def to_me():
-    if get_mc_qq_to_me():
+    if plugin_config.mc_qq_to_me:
         from nonebot.rule import to_me
 
         return to_me()
@@ -37,7 +36,7 @@ async def _guild_admin(bot: Bot, event: GuildMessageEvent):
             )
         )["roles"]
     )
-    return bool(roles & set(get_mc_qq_mcrcon_guild_admin_roles()))
+    return bool(roles & set(plugin_config.mc_qq_guild_admin_roles))
 
 
 GUILD_ADMIN: Permission = Permission(_guild_admin)
@@ -87,91 +86,18 @@ async def server_name_check(
 
 async def get_type_id(event: Union[GroupMessageEvent, GuildMessageEvent, ChannelDestroyedNoticeEvent]):
     if isinstance(event, GuildMessageEvent) or isinstance(event, ChannelDestroyedNoticeEvent):
-        from ..database import DB as db
+        from .database import DB as db
         return await db.get_guild_type_id(event.guild_id, event.channel_id)
     return event.group_id
 
 
 async def msg_rule(event: Union[GroupMessageEvent, GuildMessageEvent]) -> bool:
     """Rule 消息规则"""
-    if server_list:
-        for per_server in server_list:
-            for per_group in per_server["all_group_list"]:
-                if await get_type_id(event) == per_group["type_id"]:
-                    return True
-    return False
-
-
-async def msg_to_qq_process(json_msg):
-    """处理来自MC的消息，并返回处理后的消息"""
-    message = {
-        "PlayerJoinEvent": f"{json_msg['player']['nickname']} 加入了服务器",
-        "PlayerQuitEvent": f"{json_msg['player']['nickname']} 离开了服务器",
-        "AsyncPlayerChatEvent": f"{json_msg['player']['nickname']} 说：{json_msg['message']}",
-        "PlayerDeathEvent": f"{json_msg['message']}",
-    }
-    return message[json_msg['event_name']]
-
-
-async def send_msg_to_qq(bot: Bot, json_msg):
-    """发送消息到 QQ"""
-    msg = await msg_to_qq_process(json_msg)
-    # 循环服务器列表并发送消息
-    # 如果服务器列表不为空
-    if server_list:
-        # 开始循环
-        for per_server in server_list:
-            # 如果服务器名相匹配
-            if per_server['server_name'] == json_msg['server_name']:
-                # 如果全群聊列表存在
-                if per_server['all_group_list']:
-                    # 循环全群聊列表
-                    for per_group in per_server['all_group_list']:
-                        # 是否需要发送服务器名称
-                        if per_group["display_server_name"]:
-                            msg = f"[{json_msg['server_name']}] {msg}"
-                        # 发送至群聊
-                        if per_group["type"] == "group":
-                            logger.success(
-                                f"[MC_QQ]丨from [{json_msg['server_name']}] to [群:{per_group['type_id']}] \"{msg}\"")
-                            await bot.send_group_msg(
-                                group_id=per_group['type_id'],
-                                message=msg
-                            )
-                        # 发送至频道
-                        else:
-                            guild = await db.get_guild(id=per_group['type_id'])
-                            logger.success(
-                                f"[MC_QQ]丨from [{json_msg['server_name']}] to [频道:{guild.guild_id}/{guild.channel_id}] \"{msg}\"")
-                            await bot.send_guild_channel_msg(
-                                guild_id=guild.guild_id,
-                                channel_id=guild.channel_id,
-                                message=msg
-                            )
-
-
-async def get_member_nickname(bot: Bot, event: Union[GroupMessageEvent, GuildMessageEvent], user_id):
-    """获取昵称"""
-    # 判断从 群/频道 获取成员信息
     if isinstance(event, GroupMessageEvent):
-        # 如果获取发送者的昵称
-        if event.user_id == int(user_id):
-            return event.sender.card if event.sender.card else event.sender.nickname
-        # 如果获取其他人的昵称
-        else:
-            return (await bot.get_group_member_info(
-                group_id=event.group_id,
-                user_id=user_id,
-                no_cache=True
-            ))['nickname']
+        return event.group_id in rule_group_list
     elif isinstance(event, GuildMessageEvent):
-        # 返回频道成员昵称
-        if event.user_id == user_id:
-            return event.sender.nickname
-        else:
-            return (await bot.get_guild_member_profile(
-                guild_id=event.guild_id,
-                user_id=user_id))['nickname']
+        return f"{event.guild_id}:{event.channel_id}" in rule_guild_list
+    return False
 
 
 async def process_msg_for_ws(bot: Bot, event: Union[GroupMessageEvent, GuildMessageEvent]):
@@ -186,7 +112,7 @@ async def process_msg_for_ws(bot: Bot, event: Union[GroupMessageEvent, GuildMess
     messageList = []
 
     # 发送群聊名称
-    from ..database import DB as db
+    from .database import DB as db
     if isinstance(event, GroupMessageEvent) and (await db.get_group(group_id=event.group_id)).send_group_name:
         group_name = {'msgType': "group_name",
                       'msgData': (await bot.get_group_info(group_id=event.group_id))['group_name']}
@@ -254,7 +180,7 @@ async def process_msg_for_ws(bot: Bot, event: Union[GroupMessageEvent, GuildMess
         # 放入消息列表
         messageList.append(per_msg)
 
-    return text_msg, '{"message": ' + str(messageList) + '}'
+    return text_msg, str({"message": messageList})
 
 
 async def process_msg_for_rcon(bot: Bot, event: Union[GroupMessageEvent, GuildMessageEvent]):
@@ -271,7 +197,7 @@ async def process_msg_for_rcon(bot: Bot, event: Union[GroupMessageEvent, GuildMe
         {"text": "[MC_QQ] ", "color": "yellow"},
     ]
     # 是否发送群聊名称
-    from ..database import DB as db
+    from .database import DB as db
     # 群
     if isinstance(event, GroupMessageEvent) and (await db.get_group(group_id=event.group_id)).send_group_name:
         message_list.append(
