@@ -1,8 +1,10 @@
 # 进阶设置
 
-这里涉及到了有关 NoneBot 配置文件的相关配置
+- 这里涉及到了有关 NoneBot 配置文件的相关配置
 
-这些配置并非必须项，如有需求可自行修改
+- 这些配置并非必须项，如有需求可自行修改
+
+- 不填写的话，将采用默认值
 
 ::: details 示例（点我展开）
 
@@ -14,8 +16,8 @@ NICKNAME=[]
 COMMAND_START=[""]
 
 MC_QQ_DIR="./data/"
-MC_QQ_TO_ME=false
-MC_QQ_MCRCON_GUILD_ADMIN_ROLES=["MCQQ", "频道主"]
+mc_qq_to_me=false
+mc_qq_guild_admin_roles=["MCQQ", "频道主"]
 ```
 
 :::
@@ -27,7 +29,7 @@ MC_QQ_MCRCON_GUILD_ADMIN_ROLES=["MCQQ", "频道主"]
 - WebSocket服务器 IP
 
   ```json {7-8}
-  MC_QQ_IP="127.0.0.1"
+  mc_qq_ws_ip = "127.0.0.1"
   ```
 
 ## WebSocket 端口
@@ -37,7 +39,7 @@ MC_QQ_MCRCON_GUILD_ADMIN_ROLES=["MCQQ", "频道主"]
 - WebSocket服务器 端口
 
   ```json {7-8}
-  MC_QQ_WS_PORT=8765
+  mc_qq_ws_port = 8765
   ```
 
 ## 数据库路径
@@ -47,7 +49,7 @@ MC_QQ_MCRCON_GUILD_ADMIN_ROLES=["MCQQ", "频道主"]
 - MCQQ Bot 存储数据库的路径，数据库名为 `mcqq.sqlite3`
 
   ```json {7-8}
-  MC_QQ_DIR="./data/"
+  mc_qq_dir = "./data/"
   ```
 
 ## 是否启用 `@`
@@ -57,22 +59,18 @@ MC_QQ_MCRCON_GUILD_ADMIN_ROLES=["MCQQ", "频道主"]
 - 在使用命令时，是否需要 `@MCQQ Bot`
 
   ```json {7-8}
-  MC_QQ_TO_ME=false
+  mc_qq_to_me = false
   ```
 
 
 ## 频道管理员身份组
 
-默认值：`["频道主", "管理员"]`
+默认值：`["频道主", "超级管理员"]`
 
 - 频道中可以使用发送有效命令的身份组
-  - NoneBot 读取配置文件为按行读取，填写后请将他们缩减为一行，如上方示例一样
 
   ```json {7-8}
-  MC_QQ_MCRCON_GUILD_ADMIN_ROLES=[
-    "管理员",
-    "服务器OP"
-  ]
+  mc_qq_guild_admin_roles = ["管理员", "服务器OP"]
   ```
 
 
