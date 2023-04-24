@@ -2,21 +2,44 @@ from pathlib import Path
 from typing import Optional, List
 
 from nonebot import get_driver
+from pydantic import BaseModel
 from tortoise import Tortoise, connections
 from .models import Sub, Server, Group, Guild
-from ..utils.config import get_mc_qq_dir
-
-server_list = []
 
 
 def get_path(*other):
     """获取数据文件绝对路径"""
+    from .. import plugin_config
 
-    dir_path = Path(get_mc_qq_dir() if get_mc_qq_dir() else "./data/")
+    dir_path = Path(plugin_config.mc_qq_dir if plugin_config.mc_qq_dir else "./data/")
     if not Path(dir_path).exists():
         dir_path.mkdir()
     dir_path = dir_path.resolve()
     return str(dir_path.joinpath(*other))
+
+
+class GroupConfig(BaseModel):
+    """群配置"""
+    type: str
+    type_id: int
+    display_server_name: Optional[bool] = False
+
+
+class MinecraftServer(BaseModel):
+    """服务器配置"""
+    # 服务器名称
+    server_name: str
+    # 服务器群列表
+    all_group_list: Optional[List[GroupConfig]] = []
+    # 是否用 Rcon 发送消息
+    rcon_msg: Optional[bool] = False
+    # 是否用 Rcon 发送命令
+    rcon_cmd: Optional[bool] = False
+
+
+server_list: List[MinecraftServer] = []
+rule_group_list: List[int] = []
+rule_guild_list: List[str] = []
 
 
 class DB:
@@ -185,7 +208,7 @@ class DB:
     @classmethod
     async def delete_sub_list(cls, type, type_id):
         """删除指定位置的互通列表"""
-        async for sub in Sub.get(type=type, type_id=type_id):
+        async for sub in await Sub.get(type=type, type_id=type_id):
             await cls.delete_sub(server_name=sub.server_name, type=sub.type, type_id=sub.type_id)
         await cls.update_server_list()
 
@@ -196,26 +219,28 @@ class DB:
         servers = Server.all()
         server_list.clear()
         async for server in servers:
-            server_list.append(
-                {
-                    "server_name": server.server_name,
-                    "all_group_list": [],
-                    "rcon_msg": server.rcon_msg,
-                    "rcon_cmd": server.rcon_cmd,
-                }
-            )
+            server_list.append(MinecraftServer(
+                server_name=server.server_name,
+                all_group_list=[],  # 服务器的所有群聊列表
+                rcon_msg=server.rcon_msg,
+                rcon_cmd=server.rcon_cmd
+            ))
 
         for per_server in server_list:
             async for sub in subs:
-                if per_server["server_name"] == sub.server_name:
+                if per_server.server_name == sub.server_name:
                     # 向全群聊列表里装入每个互通记录
-                    per_server["all_group_list"].append(
-                        {
-                            "type": sub.type,
-                            "type_id": sub.type_id,
-                            "display_server_name": sub.display_server_name
-                        }
-                    )
+                    per_server.all_group_list.append(GroupConfig(
+                        type=sub.type,
+                        type_id=sub.type_id,
+                        display_server_name=sub.display_server_name
+                    ))
+        groups = Group.all()
+        async for group in groups:
+            rule_group_list.append(group.group_id)
+        guilds = Guild.all()
+        async for guild in guilds:
+            rule_guild_list.append(f"{guild.guild_id}:{guild.channel_id}")
 
 
 get_driver().on_startup(DB.init)
