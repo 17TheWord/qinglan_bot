@@ -1,7 +1,21 @@
-from nonebot import get_driver
+from nonebot import get_driver, require
+from nonebot.plugin import PluginMetadata
 from nonebot.plugin.manager import PluginLoader
 from .config import Config
 
+require("nonebot_plugin_guild_patch")
+
+__plugin_meta__ = PluginMetadata(
+    name="MC_QQ",
+    description="基于NoneBot的与Minecraft Server互通消息的插件",
+    homepage="https://github.com/17TheWord/nonebot-plugin-mcqq",
+    usage="在群聊发送消息即可同步至 Minecraft 服务器",
+    config=Config,
+    type="application",
+    supported_adapters={
+        "nonebot.adapters.onebot.v11"
+    }
+)
 if isinstance(globals()["__loader__"], PluginLoader):
     driver = get_driver()
 

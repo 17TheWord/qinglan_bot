@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as f:
 
 setuptools.setup(
     name="qinglan-bot",  # 项目名称，保证它的唯一性，不要跟已存在的包名冲突即可
-    version="0.1.0",  # 程序版本
+    version="0.1.1",  # 程序版本
     author="17TheWord",  # 项目作者
     author_email="17theword@gmail.com",  # 作者邮件
     description="基于NoneBot的QQ群聊与Minecraft Server消息互通机器人",  # 项目的一句话描述
