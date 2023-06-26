@@ -1,9 +1,9 @@
-import setuptools
+from setuptools import setup, find_packages
 
 with open("README.md", "r", encoding="utf-8") as f:
     long_description = f.read()
 
-setuptools.setup(
+setup(
     name="qinglan-bot",  # 项目名称，保证它的唯一性，不要跟已存在的包名冲突即可
     version="0.1.3",  # 程序版本
     author="17TheWord",  # 项目作者
@@ -12,7 +12,7 @@ setuptools.setup(
     long_description=long_description,  # 加长版描述？
     long_description_content_type="text/markdown",  # 描述使用Markdown
     url="https://github.com/17TheWord/qinglan_bot",  # 项目地址
-    packages=["qinglan_bot"],
+    packages=find_packages("qinglan_bot"),
     classifiers=[
         "Programming Language :: Python :: 3.9",  # 使用Python3.9
         "License :: OSI Approved :: GNU Affero General Public License v3",  # 开源协议
