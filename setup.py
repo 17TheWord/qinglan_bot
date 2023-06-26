@@ -23,7 +23,6 @@ setuptools.setup(
         'nonebot2>=2.0.0',
         'nonebot-adapter-onebot>=2.1.5',
         'nonebot-plugin-guild-patch>=0.2.0',
-        'nonebot-plugin-gocqhttp>=0.6.3',
         'websockets>=10.3',
         'tortoise-orm>=0.19.3',
         'aio-mc-rcon>=3.2.0',
