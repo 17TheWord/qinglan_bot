@@ -12,7 +12,7 @@ setuptools.setup(
     long_description=long_description,  # 加长版描述？
     long_description_content_type="text/markdown",  # 描述使用Markdown
     url="https://github.com/17TheWord/qinglan_bot",  # 项目地址
-    packages=setuptools.find_packages(),  # 无需修改
+    packages=["qinglan_bot"],
     classifiers=[
         "Programming Language :: Python :: 3.9",  # 使用Python3.9
         "License :: OSI Approved :: GNU Affero General Public License v3",  # 开源协议
@@ -20,7 +20,7 @@ setuptools.setup(
     ],
     install_requires=[
         'mcqq-tool==0.0.4',
-        'nonebot2>=2.0.0rc4',
+        'nonebot2>=2.0.0',
         'nonebot-adapter-onebot>=2.1.5',
         'nonebot-plugin-guild-patch>=0.2.0',
         'nonebot-plugin-gocqhttp>=0.6.3',
