@@ -12,7 +12,7 @@ setup(
     long_description=long_description,  # 加长版描述？
     long_description_content_type="text/markdown",  # 描述使用Markdown
     url="https://github.com/17TheWord/qinglan_bot",  # 项目地址
-    packages=find_packages("qinglan_bot"),
+    packages=find_packages(include=['qinglan_bot', 'qinglan_bot.*']),
     classifiers=[
         "Programming Language :: Python :: 3.9",  # 使用Python3.9
         "License :: OSI Approved :: GNU Affero General Public License v3",  # 开源协议
