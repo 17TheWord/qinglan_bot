@@ -16,7 +16,6 @@
 
 - NoneBot2
     - `pip install qinglan-bot`
-
     - 空目录下使用命令 `ql run`
 
 - MineCraft Server

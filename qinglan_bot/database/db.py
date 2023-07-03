@@ -163,8 +163,9 @@ class DB:
         return await Sub.get(**kwargs).first()
 
     @classmethod
-    async def add_sub(cls, *, server_name, **kwargs) -> bool:
+    async def add_sub(cls, *, server_name: str, bot_self_id: int, **kwargs) -> bool:
         """添加互通服务器"""
+
         if not await Sub.add(server_name=server_name, **kwargs):
             return False
         if kwargs["type"] == "group":
@@ -176,7 +177,8 @@ class DB:
                 rcon_port=25575,
                 rcon_password="change_password",
                 rcon_msg=False,
-                rcon_cmd=False
+                rcon_cmd=False,
+                bot_self_id=bot_self_id
             )
         await cls.update_server_list()
         return True

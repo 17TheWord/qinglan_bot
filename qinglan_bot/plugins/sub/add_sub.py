@@ -38,7 +38,8 @@ async def _(event: Union[GroupMessageEvent, GuildMessageEvent], server_name: str
         type=event.message_type,
         type_id=await get_type_id(event),
         server_name=server_name,
-        display_server_name=False
+        display_server_name=False,
+        bot_self_id=event.self_id
     )
 
     if result:

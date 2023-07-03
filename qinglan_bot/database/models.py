@@ -1,5 +1,5 @@
-from tortoise.fields.data import CharField, IntField, TextField, BooleanField
 from tortoise.models import Model
+from tortoise.fields.data import CharField, IntField, TextField, BooleanField
 
 
 class BaseModel(Model):
@@ -57,6 +57,7 @@ class Server(BaseModel):
     rcon_password = CharField(max_length=18)
     rcon_msg = BooleanField()
     rcon_cmd = BooleanField()
+    bot_self_id = IntField()
 
 
 class Group(BaseModel):

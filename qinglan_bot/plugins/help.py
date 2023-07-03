@@ -3,7 +3,7 @@ from nonebot.matcher import matchers
 
 from ..utils import to_me
 
-help = on_command("ql帮助", rule=to_me(), priority=3)
+help = on_command("ql帮助", rule=to_me(), priority=1)
 
 
 @help.handle()
