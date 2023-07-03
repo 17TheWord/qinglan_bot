@@ -4,7 +4,9 @@
 
 - 这些配置并非必须项，如有需求可自行修改
 
-- 不填写的话，将采用默认值
+- 不填写的话，将采用默认值！
+- 不填写的话，将采用默认值！
+- 不填写的话，将采用默认值！
 
 ::: details 示例（点我展开）
 
@@ -22,24 +24,14 @@ mc_qq_guild_admin_roles=["MCQQ", "频道主"]
 
 :::
 
-## WebSocket 地址
+## WebSocket 路由
 
-默认值：`"127.0.0.1"`
+默认值：`"/onebot/v11/mcqq"`
 
-- WebSocket服务器 IP
-
-  ```json {7-8}
-  mc_qq_ws_ip = "127.0.0.1"
-  ```
-
-## WebSocket 端口
-
-默认值：`8765`
-
-- WebSocket服务器 端口
+- WebSocket 服务器路由地址，如在MC端配置文件填写： `"ws://127.0.0.1:8080:onebot/v11/mcqq"`
 
   ```json {7-8}
-  mc_qq_ws_port = 8765
+  mc_qq_ws_url = "/onebot/v11/mcqq"
   ```
 
 ## 数据库路径
