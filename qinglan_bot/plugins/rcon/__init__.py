@@ -1,6 +1,6 @@
 import aiomcrcon
 from nonebot import logger
-from mcqq_tool.utils import get_client, rcon_connect
+from mcqq_tool.utils import rcon_connect, CLIENTS
 
 from . import change_ip, change_port, change_password
 from ...database.db import DB as db, server_list
@@ -9,7 +9,7 @@ from ...database.db import DB as db, server_list
 async def change_rcon_status(server_name):
     """更新Rcon状态"""
     for server in server_list:
-        if (client := get_client(server_name=server_name)) and server.server_name == server_name:
+        if (client := CLIENTS.get(server_name)) and server.server_name == server_name:
             # 获取该服务器的信息
             server = await db.get_server(server_name=server_name)
             # 开
