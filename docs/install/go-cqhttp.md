@@ -7,8 +7,8 @@
 :::
 
 ::: tip 提示
-脚手架安装的 青岚 Bot 自带 nonebot插件版的go-cqhttp  
-若选择脚手架安装，则无需安装本页的 go-cqhttp
+脚手架安装的 青岚 Bot 不再自带 nonebot 插件版的 go-cqhttp  
+若本地环境有 go-cqhttp，则自动加载
 :::
 
 ---
