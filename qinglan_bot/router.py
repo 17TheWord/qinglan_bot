@@ -1,14 +1,12 @@
 from typing import Optional
 
 from aiomcrcon import Client as RconClient
-
-from mcqq_tool.config import CLIENTS, Client
 from mcqq_tool.common import plugin_config
+from mcqq_tool.config import CLIENTS, Client
 from mcqq_tool.utils import send_msg_to_qq, remove_client, rcon_connect
-
 from nonebot import get_bot, logger
+from nonebot.drivers import URL, WebSocket, WebSocketServerSetup, ASGIMixin
 from nonebot.exception import WebSocketClosed
-from nonebot.drivers import URL, ReverseDriver, WebSocket, WebSocketServerSetup
 
 
 async def _ws_handler(websocket: WebSocket):
@@ -64,11 +62,12 @@ async def _ws_handler(websocket: WebSocket):
             await remove_client(server_name=server_name)
 
 
-async def set_route(driver: ReverseDriver):
+async def set_route(driver: ASGIMixin):
     driver.setup_websocket_server(
         WebSocketServerSetup(
             path=URL(plugin_config.mc_qq_ws_url),
-            name="mcqq",
+            name="qinglan_bot",
             handle_func=_ws_handler,
         )
     )
+    logger.success(f"[MC_QQ]丨WebSocket 服务器已启动，路由：{plugin_config.mc_qq_ws_url}")
