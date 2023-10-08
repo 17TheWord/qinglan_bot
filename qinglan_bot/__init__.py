@@ -1,4 +1,5 @@
-from nonebot import get_driver, ReverseDriver
+from nonebot import get_driver
+from nonebot.drivers import ASGIMixin
 from nonebot.plugin import PluginMetadata
 from nonebot.plugin.manager import PluginLoader
 from .config import Config
@@ -23,9 +24,9 @@ if isinstance(globals()["__loader__"], PluginLoader):
     from .router import set_route
     from . import plugins
 
-    # Bot 连接时
+
     @driver.on_startup
     async def on_start():
         # 启动 WebSocket 服务器
-        if isinstance(driver, ReverseDriver):
+        if isinstance(driver, ASGIMixin):
             await set_route(driver=driver)
